@@ -6,8 +6,4 @@ install_dev_tools:
       - npm
       - apache2
       - docker.io
-      - sublime-text
-      - code
-      - atom
       - postgresql
-      - mysql-server
