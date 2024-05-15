@@ -11,18 +11,33 @@ install_dev_tools:
       - php-mysql
       - libapache2-mod-php
 
-# Lisää tuki MySQL:lle, joka on vaihtoehtoinen tässä tapauksessa (korvaa tämä MySQL-paketin nimellä, joka on käytössä jakelussasi)
-install_mysql:
-  pkg.installed:
-    - name: default-mysql-server  # Muista tarkistaa oikea paketin nimi!
 
-# Käynnistä Apache2 palvelu
+# Käynnistä Apache2 palvelu ja luo uusi sivu
 apache2_service:
   service.running:
     - name: apache2
     - enable: true
     - watch:
       - pkg: install_dev_tools
+      - file: veikkausliiga_com_page
+
+# Uusi sivu
+veikkausliiga_com_page:
+  file.managed:
+    - name: /var/www/html/veikkausliiga.html
+    - source: salt://veikkausliiga.html
+    - user: root
+    - group: www-data
+    - mode: 644
+    - require:
+      - pkg: apache2
+
+# Pyydä Apache-palvelun status
+get_apache_status:
+  cmd.run:
+    - name: systemctl status apache2
+    - watch:
+      - service: apache2_service
 
 # Käynnistä Docker palvelu
 docker_service:
