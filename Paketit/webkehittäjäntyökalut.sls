@@ -16,15 +16,13 @@ apache2_installed:
   pkg.installed:
     - name: apache2
 
-# Käynnistä Apache2-palvelu ja asetetaan se käyttöön
+# Käynnistä Apache2-palvelu ja aseta se käyttöön
 apache2_service:
   service.running:
     - name: apache2
     - enable: true
     - require:
       - pkg: apache2_installed
-    - watch:
-      - file: veikkausliiga_com_page
 
 # Luo uusi sivu
 veikkausliiga_com_page:
@@ -49,7 +47,7 @@ docker_service:
   service.running:
     - name: docker
     - enable: true
-    - watch:
+    - require:
       - pkg: install_dev_tools
 
 # Käynnistä PostgreSQL palvelu
@@ -57,9 +55,5 @@ postgresql_service:
   service.running:
     - name: postgresql
     - enable: true
-    - watch:
-      - pkg: install_dev_tools
-
-    - enable: true
-    - watch:
+    - require:
       - pkg: install_dev_tools
