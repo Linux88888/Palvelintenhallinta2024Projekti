@@ -24,17 +24,6 @@ apache2_service:
     - require:
       - pkg: apache2_installed
 
-# Luo uusi sivu
-veikkausliiga_com_page:
-  file.managed:
-    - name: /var/www/html/veikkausliiga.html
-    - source: salt://veikkausliiga.html
-    - user: root
-    - group: www-data
-    - mode: 644
-    - require:
-      - service: apache2_service
-
 # Pyydä Apache-palvelun status
 get_apache_status:
   cmd.run:
@@ -57,3 +46,4 @@ postgresql_service:
     - enable: true
     - require:
       - pkg: install_dev_tools
+
