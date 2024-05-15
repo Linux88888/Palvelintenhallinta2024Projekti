@@ -11,17 +11,22 @@ install_dev_tools:
       - php-mysql
       - libapache2-mod-php
 
+# Varmista, että Apache2-paketti on asennettu
+apache2_installed:
+  pkg.installed:
+    - name: apache2
 
-# Käynnistä Apache2 palvelu ja luo uusi sivu
+# Käynnistä Apache2-palvelu ja asetetaan se käyttöön
 apache2_service:
   service.running:
     - name: apache2
     - enable: true
+    - require:
+      - pkg: apache2_installed
     - watch:
-      - pkg: install_dev_tools
       - file: veikkausliiga_com_page
 
-# Uusi sivu
+# Luo uusi sivu
 veikkausliiga_com_page:
   file.managed:
     - name: /var/www/html/veikkausliiga.html
@@ -30,13 +35,13 @@ veikkausliiga_com_page:
     - group: www-data
     - mode: 644
     - require:
-      - pkg: apache2
+      - service: apache2_service
 
 # Pyydä Apache-palvelun status
 get_apache_status:
   cmd.run:
     - name: systemctl status apache2
-    - watch:
+    - require:
       - service: apache2_service
 
 # Käynnistä Docker palvelu
@@ -51,6 +56,10 @@ docker_service:
 postgresql_service:
   service.running:
     - name: postgresql
+    - enable: true
+    - watch:
+      - pkg: install_dev_tools
+
     - enable: true
     - watch:
       - pkg: install_dev_tools
